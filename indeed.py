@@ -5,7 +5,7 @@ from sympy import comp
 LIMIT = 50
 URL = f"https://www.indeed.com/jobs?q=python&limit={LIMIT}"
 
-def extract_indeed_pages():
+def get_last_page():
     r = requests.get(URL)
     soup = BeautifulSoup(r.text, "html.parser")
     pagination = soup.find("div", {"class" : "pagination"})
@@ -31,7 +31,7 @@ def extract_job(html):
 def extract_indeed_jobs(last_page):
     jobs = []
     for page in range(last_page):
-        print(f"SCRAPPING PAGE ------> {page}")
+        print(f"SCRAPPING INDEED PAGE ------> {page}")
         result = requests.get(f"{URL}&start={page * LIMIT}")
         result_encode = result.text.encode('utf8')
         soup = BeautifulSoup(result_encode, "html.parser")
@@ -41,5 +41,9 @@ def extract_indeed_jobs(last_page):
         for result in results:
             job = extract_job(result)
             jobs.append(job)
-    print(len(jobs))
+    return jobs
+
+def get_jobs():
+    last_page = get_last_page()
+    jobs = extract_indeed_jobs(last_page)
     return jobs
